@@ -6,11 +6,12 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/spf13/cobra"
 )
 
-var domain string
+var domain string = "initial"
 
 // mkdirdomainCmd represents the mkdirdomain command
 var mkdirdomainCmd = &cobra.Command{
@@ -23,7 +24,10 @@ var mkdirdomainCmd = &cobra.Command{
 			fmt.Println(err)
 			return
 		}
+
 		fmt.Println(domain, currentDir)
+		folderPath := filepath.Join(currentDir, domain)
+		fmt.Println(folderPath)
 	},
 }
 
