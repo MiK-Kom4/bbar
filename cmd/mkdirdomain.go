@@ -10,6 +10,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var domain string
+
 // mkdirdomainCmd represents the mkdirdomain command
 var mkdirdomainCmd = &cobra.Command{
 	Use:   "mkdirdomain",
@@ -19,8 +21,9 @@ var mkdirdomainCmd = &cobra.Command{
 		currentDir, err := os.Getwd()
 		if err != nil {
 			fmt.Println(err)
+			return
 		}
-		fmt.Println(currentDir)
+		fmt.Println(domain, currentDir)
 	},
 }
 
@@ -28,6 +31,8 @@ func init() {
 	rootCmd.AddCommand(mkdirdomainCmd)
 
 	// Here you will define your flags and configuration settings.
+	// -d フラグでドメイン名を受け取るオプションを追加
+	mkdirdomainCmd.Flags().StringVarP(&domain, "domain", "d", "", "create a directory")
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
