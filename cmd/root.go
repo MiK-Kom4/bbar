@@ -26,7 +26,18 @@ var rootCmd = &cobra.Command{
 
 			// subfinderを実行するためのコマンドを作成
 			cmd := exec.Command("sh", "-c", fmt.Sprintf("subfinder -d %s -all -recursive | sort -u | tee subdomain.txt", domain))
-			fmt.Println(cmd)
+
+			// 実行するディレクトリをドメイン名のディレクトリに設定
+			cmd.Dir = filepath.Join(".", domain)
+			fmt.Printf("%s", cmd.Dir)
+
+			output, err := cmd.CombinedOutput()
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+			fmt.Println(string(output))
+			return
 
 		} else {
 			fmt.Println("You must provide a domain via -d flag")
@@ -59,9 +70,7 @@ func createDomainDirectory(domain string) error {
 		return fmt.Errorf("failed to get current directory: %v", err)
 	}
 
-	fmt.Println(domain, currentDir)
 	folderPath := filepath.Join(currentDir, domain)
-	fmt.Println(folderPath)
 
 	// ディレクトリが存在しないことを確認して作成
 	if _, err := os.Stat(folderPath); os.IsNotExist(err) {
