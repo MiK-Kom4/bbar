@@ -18,28 +18,12 @@ var rootCmd = &cobra.Command{
 	Use:   "bbar",
 	Short: "A CLI tool for automating reconnaissance tasks",
 	Run: func(cmd *cobra.Command, args []string) {
-		// 現在のディレクトリを所得
-		currentDir, err := os.Getwd()
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-
-		fmt.Println(domain, currentDir)
-		folderPath := filepath.Join(currentDir, domain)
-		fmt.Println(folderPath)
-
-		// ディレクトリが存在しないことを確認して作成
-		if _, err := os.Stat(folderPath); os.IsNotExist(err) {
-			// 権限はsubfinderに合わせている
-			err := os.Mkdir(folderPath, 0744)
-			if err != nil {
+		if domain != "" {
+			if err := createDomainDirectory(domain); err != nil {
 				fmt.Println(err)
-				return
 			}
-			fmt.Printf("Created folder %s\n", folderPath)
 		} else {
-			fmt.Println("Folder already exists")
+			fmt.Println("You must provide a domain via -d flag")
 		}
 	},
 }
@@ -60,4 +44,30 @@ func init() {
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+}
+
+func createDomainDirectory(domain string) error {
+	// 現在のディレクトリを所得
+	currentDir, err := os.Getwd()
+	if err != nil {
+		return fmt.Errorf("failed to get current directory: %v", err)
+	}
+
+	fmt.Println(domain, currentDir)
+	folderPath := filepath.Join(currentDir, domain)
+	fmt.Println(folderPath)
+
+	// ディレクトリが存在しないことを確認して作成
+	if _, err := os.Stat(folderPath); os.IsNotExist(err) {
+		// 権限はsubfinderに合わせている
+		err := os.Mkdir(folderPath, 0744)
+		if err != nil {
+			return fmt.Errorf("failed to create directory %v", err)
+		}
+		fmt.Printf("Created folder %s\n", folderPath)
+	} else {
+		fmt.Println("Folder already exists")
+	}
+
+	return nil
 }
