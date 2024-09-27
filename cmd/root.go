@@ -24,20 +24,9 @@ var rootCmd = &cobra.Command{
 				fmt.Println(err)
 			}
 
-			// subfinderを実行するためのコマンドを作成
-			cmd := exec.Command("sh", "-c", fmt.Sprintf("subfinder -d %s -all -recursive | sort -u | tee subdomain.txt", domain))
-
-			// 実行するディレクトリをドメイン名のディレクトリに設定
-			cmd.Dir = filepath.Join(".", domain)
-			fmt.Printf("%s", cmd.Dir)
-
-			output, err := cmd.CombinedOutput()
-			if err != nil {
-				fmt.Println(err)
-				return
+			if err := runSubfinder(domain); err != nil {
+				fmt.Println("Error running subfinder:", err)
 			}
-			fmt.Println(string(output))
-			return
 
 		} else {
 			fmt.Println("You must provide a domain via -d flag")
@@ -84,5 +73,22 @@ func createDomainDirectory(domain string) error {
 		fmt.Println("Folder already exists")
 	}
 
+	return nil
+}
+
+func runSubfinder(domain string) error {
+
+	// subfinderを実行するためのコマンドを作成
+	cmd := exec.Command("sh", "-c", fmt.Sprintf("subfinder -d %s -all -recursive | sort -u | tee subdomain.txt", domain))
+
+	// 実行するディレクトリをドメイン名のディレクトリに設定
+	cmd.Dir = filepath.Join(".", domain)
+	fmt.Printf("%s", cmd.Dir)
+
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return fmt.Errorf("failed to run subfinder: %v", err)
+	}
+	fmt.Println(string(output))
 	return nil
 }
