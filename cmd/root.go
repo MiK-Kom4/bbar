@@ -6,6 +6,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 
 	"github.com/spf13/cobra"
@@ -22,6 +23,11 @@ var rootCmd = &cobra.Command{
 			if err := createDomainDirectory(domain); err != nil {
 				fmt.Println(err)
 			}
+
+			// subfinderを実行するためのコマンドを作成
+			cmd := exec.Command("sh", "-c", fmt.Sprintf("subfinder -d %s -all -recursive | sort -u | tee subdomain.txt", domain))
+			fmt.Println(cmd)
+
 		} else {
 			fmt.Println("You must provide a domain via -d flag")
 		}
